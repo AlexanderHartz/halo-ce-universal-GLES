@@ -144,6 +144,7 @@ PLATFORM_FLAGS = [
     "-std=gnu11",
     "-D_GNU_SOURCE",
     "-DHALO_LINUX_PLATFORM_LAYER",
+    "-DHALO_LINUX_GLES", 
     "-Wall",
     "-Wno-unused-function",
     "-Wno-unknown-pragmas",

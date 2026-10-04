@@ -16,16 +16,42 @@ Windows it is __stdcall too, and SDL would include windows.h without it) */
 #ifndef _WIN32
 #undef APIENTRY
 #endif
-#ifdef HALO_ANDROID
+#if defined(HALO_ANDROID) || defined(HALO_LINUX_GLES)
 #include <GLES3/gl32.h>
 #include <GLES2/gl2ext.h>
+#include <GLES3/gl3ext.h>
 #define GLAPIENTRY GL_APIENTRY
+// Definiciones manuales para funciones y constantes que pueden faltar
+#ifndef GL_COPY_IMAGE_SUB_DATA
+#define GL_COPY_IMAGE_SUB_DATA 0x8370
+#endif
+
+#ifndef GL_DRAW_ELEMENTS_BASE_VERTEX
+#define GL_DRAW_ELEMENTS_BASE_VERTEX 0x8B9D
+#endif
+
+#ifndef GL_ATOMIC_COUNTER_BUFFER
+#define GL_ATOMIC_COUNTER_BUFFER 0x92C0
+#endif
+
+#ifndef GL_MAX_FRAGMENT_ATOMIC_COUNTERS
+#define GL_MAX_FRAGMENT_ATOMIC_COUNTERS 0x92D4
+#endif
+
+#ifndef GL_QUERY_BUFFER
+#define GL_QUERY_BUFFER 0x919C
+#endif
+
+#else
+#include <SDL3/SDL_opengl.h>
+#endif
+
 #else
 #include <SDL3/SDL_opengl.h>
 #endif
 #pragma pop_macro("APIENTRY")
 
-#ifdef HALO_ANDROID
+#if defined(HALO_ANDROID) || defined(HALO_LINUX_GLES)
 /* OpenGL ES 3.2 (port/android/README.md); tools/android_gl_stubs.py reads
 this list to generate the guest's entry points */
 /* ANDROID_GL_FUNCTIONS_BEGIN */
@@ -128,7 +154,16 @@ this list to generate the guest's entry points */
 	X(glGenQueries) \
 	X(glBeginQuery) \
 	X(glEndQuery) \
-	X(glGetQueryObjectuiv)
+	X(glGetQueryObjectuiv)\
+	X(glCopyImageSubData) \
+	X(glDrawElementsBaseVertex) \
+	X(glBufferStorageEXT) \
+	X(glMapBufferRange) \
+	X(glUnmapBuffer) \
+	X(glFenceSync) \
+	X(glClientWaitSync) \
+	X(glDeleteSync) \
+	X(glGetStringi)
 /* ANDROID_GL_FUNCTIONS_END */
 #else
 #define GL_FUNCTIONS(X) \
@@ -245,7 +280,7 @@ GL_FUNCTIONS(GL_DECLARE_FUNCTION)
 /* call sites use the ordinary names; gl_functions.c, which defines the
 pointers, sees the declarations without these aliases */
 #ifndef GL_FUNCTIONS_DEFINE
-#ifdef HALO_ANDROID
+#if defined(HALO_ANDROID) || defined(HALO_LINUX_GLES)
 #define glGetString halo_glGetString
 #define glGetIntegerv halo_glGetIntegerv
 #define glCopyImageSubData halo_glCopyImageSubData
@@ -451,7 +486,6 @@ pointers, sees the declarations without these aliases */
 #define glMemoryBarrier halo_glMemoryBarrier
 #define glDebugMessageCallback halo_glDebugMessageCallback
 
-#endif
 #endif
 
 /* returns FALSE (and logs) if a required function is missing */

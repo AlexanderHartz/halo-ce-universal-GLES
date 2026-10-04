@@ -22,4 +22,5 @@ const char *config_string(const char *name);
 changes); 1 on success */
 int config_write_boolean(const char *name, int value);
 
+
 #endif

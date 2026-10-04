@@ -68,6 +68,8 @@
   "libraries": [
     "SDL3",
     "m",
-    "pthread"
+    "pthread",
+    "GLESv2",
+    "EGL"
   ]
 }
